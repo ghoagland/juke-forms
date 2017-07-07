@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-
-//Need to fix button so it updates with state
+import axios from 'axios';
 
 class NewPlaylist extends Component {
 
   constructor(){
     super()
     this.state = {
-      inputValue: ''
+      inputValue: '',
+      buttonDisabled: true,
+      dirtyInput: false
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -15,16 +16,19 @@ class NewPlaylist extends Component {
 
   handleSubmit (event) {
     event.preventDefault();
+    this.props.addPlaylist(this.state.inputValue);
     this.setState({
       inputValue: ''
     });
   }
 
   handleChange (event) {
+    var invalidForButton = !event.target.value.length || event.target.value.length > 16;
     this.setState({
-      inputValue: event.target.value
+      inputValue: event.target.value,
+      buttonDisabled: invalidForButton,
+      dirtyInput: true
     });
-
   }
 
   render() {
@@ -41,10 +45,10 @@ class NewPlaylist extends Component {
             </div>
             <div className="form-group">
               <div className="col-xs-10 col-xs-offset-2">
-                <button type="submit" className="btn btn-success" disabled={() => {
-                  return (this.state.inputValue !== "" && this.state.inputValue.length <= 16)
+                {
+                  this.state.dirtyInput && this.state.buttonDisabled ? (<div className="alert alert-warning" name="validWarning">Please enter a valid name</div>) : <div></div>
                 }
-              }>Create Playlist</button>
+                <button type="submit" className="btn btn-success" disabled={this.state.buttonDisabled}>Create Playlist</button>
               </div>
             </div>
           </fieldset>
